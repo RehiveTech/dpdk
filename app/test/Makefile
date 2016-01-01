@@ -44,6 +44,7 @@ APP = test
 SRCS-$(CONFIG_RTE_LIBRTE_CMDLINE) := commands.c
 SRCS-y += test.c
 SRCS-y += test_pci.c
+SRCS-y += test_soc.c
 SRCS-y += test_prefetch.c
 SRCS-y += test_byteorder.c
 SRCS-y += test_per_lcore.c
@@ -159,6 +160,8 @@ CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)
 
 CFLAGS += -D_GNU_SOURCE
+
+CFLAGS_test_soc.o += -Wno-error=incompatible-pointer-types
 
 # Disable VTA for memcpy test
 ifeq ($(CC), gcc)
