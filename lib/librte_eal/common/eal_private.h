@@ -36,6 +36,7 @@
 
 #include <stdio.h>
 #include <rte_pci.h>
+#include <rte_soc.h>
 
 /**
  * Initialize the memzone subsystem (private to eal).
@@ -129,6 +130,13 @@ int rte_eal_log_init(const char *id, int facility);
  */
 int rte_eal_pci_init(void);
 
+/**
+ * This function is private to EAL.
+ * @return
+ *   0 on success
+ */
+int rte_eal_soc_init(void);
+
 #ifdef RTE_LIBRTE_IVSHMEM
 /**
  * Init the memory from IVSHMEM devices
@@ -175,12 +183,16 @@ int pci_unbind_kernel_driver(struct rte_pci_device *dev);
  */
 int pci_map_device(struct rte_pci_device *dev);
 
+int soc_map_device(struct rte_soc_device *dev);
+
 /**
  * Unmap this device
  *
  * This function is private to EAL.
  */
 void pci_unmap_device(struct rte_pci_device *dev);
+
+void soc_unmap_device(struct rte_soc_device *dev);
 
 /**
  * Map the PCI resource of a PCI device in virtual memory
