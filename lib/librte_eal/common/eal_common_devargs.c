@@ -105,6 +105,12 @@ rte_eal_devargs_add(enum rte_devtype devtype, const char *devargs_str)
 			goto fail;
 
 		break;
+	case RTE_DEVTYPE_WHITELISTED_SOC:
+	case RTE_DEVTYPE_BLACKLISTED_SOC:
+		strncpy(devargs->soc.addr.devtree_path,
+				buf, PATH_MAX);
+		/* TODO: test file exists? */
+		break;
 	case RTE_DEVTYPE_VIRTUAL:
 		/* save driver name */
 		ret = snprintf(devargs->virt.drv_name,
