@@ -46,6 +46,9 @@
 #include "eal_private.h"
 #include "eal_pci_init.h"
 
+const char *__sysfs_soc_devices = "/sys/bus/platform/devices";
+const char *__fdt_root = "/proc/device-tree";
+
 int
 soc_map_device(struct rte_soc_device *dev)
 {
@@ -378,11 +381,23 @@ error:
 int
 rte_eal_soc_init(void)
 {
+	char *tmp;
+
 	TAILQ_INIT(&soc_driver_list);
 	TAILQ_INIT(&soc_device_list);
 
 	if (internal_config.no_soc)
 		return 0;
+
+	if ((tmp = getenv("SYSFS_SOC_DEVICES")))
+		__sysfs_soc_devices = tmp;
+	else
+		__sysfs_soc_devices = "/sys/bus/platform/devices";
+
+	if ((tmp = getenv("FDT_ROOT")))
+		__fdt_root = tmp;
+	else
+		__fdt_root = "/proc/device-tree";
 
 	if (rte_eal_soc_scan() < 0) {
 		RTE_LOG(ERR, EAL, "%s(): Failed to scan for SoC devices\n",

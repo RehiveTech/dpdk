@@ -56,9 +56,11 @@ extern struct soc_device_list soc_device_list;
 extern struct soc_driver_list soc_driver_list;
 
 /* Path to detect platform devices (in architecture-specific bus systems). */
-#define SYSFS_SOC_DEVICES "/sys/bus/platform/devices"
+#define SYSFS_SOC_DEVICES __sysfs_soc_devices
+extern const char *__sysfs_soc_devices;
 /* Flat Device Tree location in the system. */
-#define FDT_ROOT "/proc/device-tree"
+#define FDT_ROOT __fdt_root
+extern const char *__fdt_root;
 
 struct rte_soc_resource {
 	uint64_t phys_addr; /**< Physical address, 0 if no resource. */
