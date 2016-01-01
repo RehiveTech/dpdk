@@ -69,6 +69,7 @@
 #include <rte_cpuflags.h>
 #include <rte_interrupts.h>
 #include <rte_pci.h>
+#include <rte_soc.h>
 #include <rte_devargs.h>
 #include <rte_common.h>
 #include <rte_version.h>
@@ -784,6 +785,9 @@ rte_eal_init(int argc, char **argv)
 
 	if (rte_eal_pci_init() < 0)
 		rte_panic("Cannot init PCI\n");
+
+	if (rte_eal_soc_init() < 0)
+		rte_panic("Cannot init SoC\n");
 
 #ifdef RTE_LIBRTE_IVSHMEM
 	if (rte_eal_ivshmem_init() < 0)
