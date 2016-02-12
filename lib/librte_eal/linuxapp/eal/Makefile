@@ -61,6 +61,7 @@ SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_memory.c
 ifeq ($(CONFIG_RTE_LIBRTE_XEN_DOM0),y)
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_xen_memory.c
 endif
+SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_fdt.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_thread.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_log.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_pci.c
@@ -82,6 +83,7 @@ SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_timer.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_memzone.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_log.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_launch.c
+SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_fdt.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_pci.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_pci_uio.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += eal_common_memory.c
@@ -113,6 +115,7 @@ CFLAGS_eal_lcore.o := -D_GNU_SOURCE
 CFLAGS_eal_thread.o := -D_GNU_SOURCE
 CFLAGS_eal_log.o := -D_GNU_SOURCE
 CFLAGS_eal_common_log.o := -D_GNU_SOURCE
+CFLAGS_eal_fdt.o := -D_GNU_SOURCE
 CFLAGS_eal_hugepage_info.o := -D_GNU_SOURCE
 CFLAGS_eal_pci.o := -D_GNU_SOURCE
 CFLAGS_eal_pci_uio.o := -D_GNU_SOURCE
