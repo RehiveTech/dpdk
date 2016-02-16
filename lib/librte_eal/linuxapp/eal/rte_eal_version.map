@@ -154,3 +154,23 @@ DPDK_16.04 {
 	rte_eal_primary_proc_alive;
 
 } DPDK_2.2;
+
+DPDK_16.07 {
+	global:
+
+	rte_fdt_open;
+	rte_fdt_close;
+	rte_fdt_path_is_valid;
+	rte_fdt_path_pushs;
+	rte_fdt_path_pop;
+	rte_fdt_path_dup;
+	rte_fdt_path_free;
+	rte_fdt_path_parse;
+	rte_fdt_path_tostr;
+	rte_fdt_path_read;
+	rte_fdt_path_read32;
+	rte_fdt_path_read64;
+	rte_fdt_path_reads;
+	rte_fdt_path_walk;
+
+} DPDK_16.07;
