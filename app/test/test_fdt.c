@@ -37,7 +37,26 @@
 
 #include "test.h"
 
+#include <rte_common.h>
 #include <rte_fdt.h>
+
+#ifdef RTE_EXEC_ENV_LINUXAPP
+static int test_fdt_open_close(void)
+{
+	struct rte_fdt *fdt;
+
+	fdt = rte_fdt_open("linux-fdt/xgene1");
+	TEST_ASSERT_NOT_NULL(fdt, "failed to open linux-fdt/xgene1");
+	rte_fdt_close(fdt);
+	return 0;
+}
+#else
+static int test_fdt_open_close(void)
+{
+	printf("The %s is not implemented for this platform\n", __func__);
+	return 0;
+}
+#endif
 
 static int test_fdt_path_is_valid(void)
 {
@@ -249,8 +268,197 @@ static int test_fdt_path_parse(void)
 	return 0;
 }
 
+static int test_fdt_path_read_common(struct rte_fdt *fdt)
+{
+	struct rte_fdt_path *path = NULL;
+	ssize_t len;
+	char *str;
+	uint32_t u32;
+
+	/* reads string from /model */
+	TEST_ASSERT_SUCCESS(rte_fdt_path_parse(&path, "/model"),
+			"failed to parse '/model'");
+	len = rte_fdt_path_reads(fdt, path, NULL, &str);
+	TEST_ASSERT_EQUAL(len, 25,
+			"unexpected length (%zd) of '/model'", len);
+	TEST_ASSERT_SUCCESS(strcmp(str, "APM X-Gene Mustang board"),
+			"unexpected content of '/model': '%s'", str);
+	free(str);
+	rte_fdt_path_free(path);
+
+	/* reads string from /compatible */
+	TEST_ASSERT_SUCCESS(rte_fdt_path_parse(&path, "/compatible"),
+			"failed to parse '/compatible'");
+	len = rte_fdt_path_reads(fdt, path, NULL, &str);
+	TEST_ASSERT_EQUAL(len, 28,
+			"unexpected length (%zd) of '/compatible'", len);
+	TEST_ASSERT_SUCCESS(strcmp(str, "apm,mustang\0apm,xgene-storm"),
+			"unexpected content(1) of '/compatible': '%s'", str);
+	TEST_ASSERT_SUCCESS(strcmp(str + 12, "apm,xgene-storm"),
+			"unexpected content(2) of '/compatible': '%s'", str);
+	free(str);
+	rte_fdt_path_free(path);
+
+	/* reads string from /#address-cells */
+	TEST_ASSERT_SUCCESS(rte_fdt_path_parse(&path, "/#address-cells"),
+			"failed to parse '/#address-cells'");
+	len = rte_fdt_path_read32(fdt, path, NULL, &u32, 1);
+	TEST_ASSERT_EQUAL(len, 1, "failed to read "
+			"'/#address-cells': %zd", len);
+	TEST_ASSERT_EQUAL(u32, 2, "unexpected value of "
+			"'/#address-cells': %zu", (size_t) u32);
+	rte_fdt_path_free(path);
+
+	/* reads string from /#size-cells */
+	TEST_ASSERT_SUCCESS(rte_fdt_path_parse(&path, "/#size-cells"),
+			"failed to parse '/#size-cells'");
+	len = rte_fdt_path_read32(fdt, path, NULL, &u32, 1);
+	TEST_ASSERT_EQUAL(len, 1, "failed to read "
+			"'/#size-cells': %zd", len);
+	TEST_ASSERT_EQUAL(u32, 2, "unexpected value of "
+			"'/#size-cells': %zu", (size_t) u32);
+	rte_fdt_path_free(path);
+
+	return 0;
+}
+
+static int test_fdt_xgene1_ethernet(struct rte_fdt *fdt)
+{
+	struct rte_fdt_path *base;
+	ssize_t len;
+	uint64_t reg[6];
+	char mac[6];
+	ssize_t i;
+	const char e17020000_mac[] = {
+		0x00, 0x11, 0x3a, 0x8a, 0x5a, 0x78
+	};
+
+	TEST_ASSERT_SUCCESS(rte_fdt_path_parse(&base,
+				"/soc/ethernet@17020000"),
+			"failed to parse '/soc/ethernet@17020000'");
+	len = rte_fdt_path_read64(fdt, base, "reg", reg, 6);
+	TEST_ASSERT_EQUAL(len, 6, "unexpected length of 'reg': %zd", len);
+
+	TEST_ASSERT_EQUAL(reg[0], 0x17020000, "unexpected value of "
+			"reg[0]: %zx", (size_t) reg[0]);
+	TEST_ASSERT_EQUAL(reg[1], 0x00000030, "unexpected value of "
+			"reg[1]: %zx", (size_t) reg[1]);
+	TEST_ASSERT_EQUAL(reg[2], 0x17020000, "unexpected value of "
+			"reg[2]: %zx", (size_t) reg[2]);
+	TEST_ASSERT_EQUAL(reg[3], 0x00010000, "unexpected value of "
+			"reg[3]: %zx", (size_t) reg[3]);
+	TEST_ASSERT_EQUAL(reg[4], 0x17020000, "unexpected value of "
+			"reg[4]: %zx", (size_t) reg[4]);
+	TEST_ASSERT_EQUAL(reg[5], 0x00000020, "unexpected value of "
+			"reg[5]: %zx", (size_t) reg[5]);
+
+	len = rte_fdt_path_read(fdt, base, "local-mac-address", mac, 6);
+	TEST_ASSERT_EQUAL(len, 6, "unexpected length of "
+			"'local-mac-address': %zd", len);
+	for (i = 0; i < len; ++i) {
+		int v = mac[i];
+		int exp = e17020000_mac[i];
+		TEST_ASSERT_EQUAL(v, exp, "unexpected mac[%zu]: %x\n", i, v);
+	}
+
+	rte_fdt_path_free(base);
+	return 0;
+}
+
+#ifdef RTE_EXEC_ENV_LINUXAPP
+static int test_fdt_path_read(void)
+{
+	int ret;
+	struct rte_fdt *fdt;
+
+	fdt = rte_fdt_open("linux-fdt/xgene1");
+	TEST_ASSERT_NOT_NULL(fdt, "failed to open linux-fdt/xgene1");
+
+	ret = test_fdt_path_read_common(fdt);
+	if (ret)
+		goto fail;
+
+	ret = test_fdt_xgene1_ethernet(fdt);
+	if (ret)
+		goto fail;
+
+fail:
+	rte_fdt_close(fdt);
+	return ret;
+}
+#else
+static int test_fdt_path_read(void)
+{
+	printf("The %s is not implemented for this platform\n", __func__);
+	return 0;
+}
+#endif
+
+#ifdef RTE_EXEC_ENV_LINUXAPP
+static int test_walk(__rte_unused struct rte_fdt *fdt,
+		__rte_unused const struct rte_fdt_path *path,
+		const char *top, void *context)
+{
+	struct {
+		int seen;
+		const char *name;
+	} *expect = context;
+	int i;
+
+	for (i = 0; i < 5; ++i) {
+		if (!strcmp(top, expect[i].name)) {
+			expect[i].seen += 1;
+			return 0;
+		}
+	}
+
+	printf("unexpected top: '%s'\n", top);
+	return 2; /* stop walking, unexpected top */
+}
+
+static int test_fdt_path_walk(void)
+{
+	int ret;
+	struct rte_fdt *fdt;
+	struct {
+		int seen;
+		const char *name;
+	} expect[] = {
+		{ 0, "#address-cells" },
+		{ 0, "compatible" },
+		{ 0, "model" },
+		{ 0, "#size-cells" },
+		{ 0, "soc" },
+	};
+	int i;
+
+	fdt = rte_fdt_open("linux-fdt/xgene1");
+	TEST_ASSERT_NOT_NULL(fdt, "failed to open linux-fdt/xgene1");
+
+	ret = rte_fdt_path_walk(fdt, NULL, test_walk, expect);
+	TEST_ASSERT_SUCCESS(ret, "walk has failed: %d", ret);
+
+	for (i = 0; i < 5; ++i) {
+		TEST_ASSERT_EQUAL(expect[i].seen, 1, "unexpected value of "
+				"seen for '%s' (%u)", expect[i].name, i);
+	}
+
+	rte_fdt_close(fdt);
+	return 0;
+}
+#else
+static int test_fdt_path_walk(void)
+{
+	printf("The %s is not implemented for this platform\n", __func__);
+	return 0;
+}
+#endif
+
 static int test_fdt(void)
 {
+	if (test_fdt_open_close())
+		return -1;
+
 	if (test_fdt_path_is_valid())
 		return -1;
 
@@ -258,6 +466,12 @@ static int test_fdt(void)
 		return -1;
 
 	if (test_fdt_path_parse())
+		return -1;
+
+	if (test_fdt_path_read())
+		return -1;
+
+	if (test_fdt_path_walk())
 		return -1;
 
 	return 0;
