@@ -32,12 +32,18 @@
  */
 
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/ioctl.h>
 
 #include <rte_log.h>
 #include <rte_memory.h>
+#include <rte_eal_memconfig.h>
 
+#include "eal_filesystem.h"
 #include "eal_vfio.h"
+
+#ifdef VFIO_PRESENT
 
 const struct vfio_iommu_type *
 vfio_set_iommu_type(int vfio_container_fd) {
@@ -95,6 +101,70 @@ vfio_has_supported_extensions(int vfio_container_fd) {
 }
 
 int
+vfio_get_container_fd(void)
+{
+	int ret, vfio_container_fd;
+
+	/* if we're in a primary process, try to open the container */
+	if (internal_config.process_type == RTE_PROC_PRIMARY) {
+		vfio_container_fd = open(VFIO_CONTAINER_PATH, O_RDWR);
+		if (vfio_container_fd < 0) {
+			RTE_LOG(ERR, EAL, "  cannot open VFIO container, "
+					"error %i (%s)\n", errno, strerror(errno));
+			return -1;
+		}
+
+		/* check VFIO API version */
+		ret = ioctl(vfio_container_fd, VFIO_GET_API_VERSION);
+		if (ret != VFIO_API_VERSION) {
+			if (ret < 0)
+				RTE_LOG(ERR, EAL, "  could not get VFIO API version, "
+						"error %i (%s)\n", errno, strerror(errno));
+			else
+				RTE_LOG(ERR, EAL, "  unsupported VFIO API version!\n");
+			close(vfio_container_fd);
+			return -1;
+		}
+
+		ret = vfio_has_supported_extensions(vfio_container_fd);
+		if (ret) {
+			RTE_LOG(ERR, EAL, "  no supported IOMMU "
+					"extensions found!\n");
+			return -1;
+		}
+
+		return vfio_container_fd;
+	} else {
+		/*
+		 * if we're in a secondary process, request container fd from the
+		 * primary process via our socket
+		 */
+		int socket_fd;
+
+		socket_fd = vfio_mp_sync_connect_to_primary();
+		if (socket_fd < 0) {
+			RTE_LOG(ERR, EAL, "  cannot connect to primary process!\n");
+			return -1;
+		}
+		if (vfio_mp_sync_send_request(socket_fd, SOCKET_REQ_CONTAINER) < 0) {
+			RTE_LOG(ERR, EAL, "  cannot request container fd!\n");
+			close(socket_fd);
+			return -1;
+		}
+		vfio_container_fd = vfio_mp_sync_receive_fd(socket_fd);
+		if (vfio_container_fd < 0) {
+			RTE_LOG(ERR, EAL, "  cannot get container fd!\n");
+			close(socket_fd);
+			return -1;
+		}
+		close(socket_fd);
+		return vfio_container_fd;
+	}
+
+	return -1;
+}
+
+int
 vfio_type1_dma_map(int vfio_container_fd)
 {
 	const struct rte_memseg *ms = rte_eal_get_physmem_layout();
@@ -132,3 +202,5 @@ vfio_noiommu_dma_map(int __rte_unused vfio_container_fd)
 	/* No-IOMMU mode does not need DMA mapping */
 	return 0;
 }
+
+#endif
