@@ -154,3 +154,11 @@ DPDK_16.04 {
 	rte_eal_primary_proc_alive;
 
 } DPDK_2.2;
+
+DPDK_16.07 {
+	global:
+
+	rte_eal_dev_attach;
+	rte_eal_dev_detach;
+
+} DPDK_16.04;
