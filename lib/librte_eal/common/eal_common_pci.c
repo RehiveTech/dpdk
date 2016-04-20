@@ -82,8 +82,10 @@
 
 #include "eal_private.h"
 
-struct pci_driver_list pci_driver_list;
-struct pci_device_list pci_device_list;
+struct pci_driver_list pci_driver_list =
+	TAILQ_HEAD_INITIALIZER(pci_driver_list);
+struct pci_device_list pci_device_list =
+	TAILQ_HEAD_INITIALIZER(pci_device_list);
 
 static struct rte_devargs *pci_devargs_lookup(struct rte_pci_device *dev)
 {
