@@ -83,6 +83,7 @@ extern "C" {
 #include <inttypes.h>
 
 #include <rte_debug.h>
+#include <rte_dev.h>
 #include <rte_interrupts.h>
 
 TAILQ_HEAD(pci_device_list, rte_pci_device); /**< PCI devices in D-linked Q. */
@@ -144,15 +145,6 @@ struct rte_pci_addr {
 };
 
 struct rte_devargs;
-
-enum rte_kernel_driver {
-	RTE_KDRV_UNKNOWN = 0,
-	RTE_KDRV_IGB_UIO,
-	RTE_KDRV_VFIO,
-	RTE_KDRV_UIO_GENERIC,
-	RTE_KDRV_NIC_UIO,
-	RTE_KDRV_NONE,
-};
 
 /**
  * A structure describing a PCI device.

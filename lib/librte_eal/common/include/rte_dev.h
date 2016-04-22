@@ -100,6 +100,14 @@ rte_pmd_debug_trace(const char *func_name, const char *fmt, ...)
 	} \
 } while (0)
 
+enum rte_kernel_driver {
+	RTE_KDRV_UNKNOWN = 0,
+	RTE_KDRV_IGB_UIO,
+	RTE_KDRV_VFIO,
+	RTE_KDRV_UIO_GENERIC,
+	RTE_KDRV_NIC_UIO,
+	RTE_KDRV_NONE,
+};
 
 /** Double linked list of device drivers. */
 TAILQ_HEAD(rte_driver_list, rte_driver);
