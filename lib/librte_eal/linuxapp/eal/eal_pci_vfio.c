@@ -340,7 +340,7 @@ pci_vfio_map_resource(struct rte_pci_device *dev)
 
 	/* if we're in a primary process, allocate vfio_res and get region info */
 	if (internal_config.process_type == RTE_PROC_PRIMARY) {
-		vfio_res = rte_zmalloc("VFIO_RES", sizeof(*vfio_res), 0);
+		vfio_res = rte_zmalloc("PCI_VFIO_RES", sizeof(*vfio_res), 0);
 		if (vfio_res == NULL) {
 			RTE_LOG(ERR, EAL,
 				"%s(): cannot store uio mmap details\n", __func__);
