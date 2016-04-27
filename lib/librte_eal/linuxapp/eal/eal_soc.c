@@ -44,6 +44,7 @@
 #include <rte_log.h>
 #include <rte_soc.h>
 
+#include "eal_internal_cfg.h"
 #include "eal_private.h"
 
 static char *
@@ -279,4 +280,20 @@ rte_eal_soc_scan(void)
 error:
 	closedir(dir);
 	return -1;
+}
+
+/* Init the SoC EAL subsystem */
+int
+rte_eal_soc_init(void)
+{
+	/* for debug purposes, SoC can be disabled */
+	if (internal_config.no_soc)
+		return 0;
+
+	if (rte_eal_soc_scan() < 0) {
+		RTE_LOG(ERR, EAL, "%s(): Cannot scan SoC devices\n", __func__);
+		return -1;
+	}
+
+	return 0;
 }
