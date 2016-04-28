@@ -119,6 +119,11 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 		return 1;
 	}
 
+	/* map resources */
+	ret = rte_eal_soc_map_device(dev);
+	if (ret)
+		return ret;
+
 	dev->driver = dr;
 	RTE_VERIFY(dr->devinit != NULL);
 	return dr->devinit(dr, dev);
@@ -168,6 +173,8 @@ rte_eal_soc_detach_dev(struct rte_soc_driver *dr,
 	/* clear driver structure */
 	dev->driver = NULL;
 
+	/* unmap resources for devices */
+	rte_eal_soc_unmap_device(dev);
 	return 0;
 }
 
@@ -312,6 +319,12 @@ soc_dump_one_device(FILE *f, struct rte_soc_device *dev)
 
 	for (i = 0; dev->id && dev->id[i].compatible; ++i)
 		fprintf(f, "   %s\n", dev->id[i].compatible);
+
+	for (i = 0; i < SOC_MAX_RESOURCE; i++) {
+		fprintf(f, "   %16.16"PRIx64" %16.16"PRIx64"\n",
+			dev->mem_resource[i].phys_addr,
+			dev->mem_resource[i].len);
+	}
 
 	return 0;
 }

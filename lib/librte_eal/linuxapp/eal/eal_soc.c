@@ -47,6 +47,34 @@
 #include "eal_internal_cfg.h"
 #include "eal_private.h"
 
+int
+rte_eal_soc_map_device(struct rte_soc_device *dev)
+{
+	int ret = -1;
+
+	/* try mapping the NIC resources using VFIO if it exists */
+	switch (dev->kdrv) {
+	default:
+		RTE_LOG(DEBUG, EAL,
+			"  Not managed by a supported kernel driver, skipped\n");
+		ret = 1;
+		break;
+	}
+
+	return ret;
+}
+
+void
+rte_eal_soc_unmap_device(struct rte_soc_device *dev)
+{
+	switch (dev->kdrv) {
+	default:
+		RTE_LOG(DEBUG, EAL,
+			"  Not managed by a supported kernel driver, skipped\n");
+		break;
+	}
+}
+
 static char *
 dev_read_uevent(const char *dirname)
 {
@@ -259,6 +287,8 @@ soc_scan_one(const char *dirname, const char *name)
 				TAILQ_INSERT_BEFORE(dev2, dev, next);
 			} else { /* already registered */
 				dev2->kdrv = dev->kdrv;
+				memmove(dev2->mem_resource, dev->mem_resource,
+					sizeof(dev->mem_resource));
 
 				dev_content_free(dev2);
 				dev2->addr.fdt_path = dev->addr.fdt_path;

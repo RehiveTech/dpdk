@@ -166,5 +166,7 @@ DPDK_16.07 {
 	rte_eal_soc_detach;
 	rte_eal_soc_probe;
 	rte_eal_soc_probe_one;
+	rte_eal_soc_map_device;
+	rte_eal_soc_unmap_device;
 
 } DPDK_16.04;

@@ -50,6 +50,7 @@ extern "C" {
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
+#include <limits.h>
 
 #include <rte_debug.h>
 #include <rte_eal.h>
@@ -63,6 +64,14 @@ extern struct soc_device_list soc_device_list; /**< Global list of SoC devices. 
 
 /** Return SoC scan path of the sysfs root. */
 const char *soc_get_sysfs_path(void);
+
+#define SOC_MAX_RESOURCE 6
+
+struct rte_soc_resource {
+	uint64_t phys_addr;
+	uint64_t len;
+	void *addr;
+};
 
 struct rte_soc_id {
 	const char *compatible; /**< OF compatible specification */
@@ -82,6 +91,7 @@ struct rte_soc_device {
 	TAILQ_ENTRY(rte_soc_device) next;   /**< Next probed SoC device */
 	struct rte_soc_addr addr;           /**< SoC device Location */
 	struct rte_soc_id *id;              /**< SoC device ID list */
+	struct rte_soc_resource mem_resource[SOC_MAX_RESOURCE];
 	struct rte_soc_driver *driver;      /**< Associated driver */
 	struct rte_devargs *devargs;        /**< Device user arguments */
 	enum rte_kernel_driver kdrv;        /**< Kernel driver */
@@ -109,6 +119,34 @@ struct rte_soc_driver {
 	soc_devuninit_t *devuninit;        /**< Device uninitialization */
 	const struct rte_soc_id *id_table; /**< ID table, NULL terminated */
 };
+
+/**
+ * A structure describing a SoC mapping.
+ */
+struct soc_map {
+	void *addr;
+	char *path;
+	uint64_t offset;
+	uint64_t size;
+	uint64_t phaddr;
+};
+
+/**
+ * A structure describing a mapped SoC resource.
+ * For multi-process we need to reproduce all SoC mappings in secondary
+ * processes, so save them in a tailq.
+ */
+struct mapped_soc_resource {
+	TAILQ_ENTRY(mapped_soc_resource) next;
+
+	struct rte_soc_addr soc_addr;
+	char path[PATH_MAX];
+	int nb_maps;
+	struct soc_map maps[SOC_MAX_RESOURCE];
+};
+
+/** mapped SoC resource list */
+TAILQ_HEAD(mapped_soc_res_list, mapped_soc_resource);
 
 /**
  * Utility function to write a SoC device name, this device name can later be
@@ -200,6 +238,18 @@ int rte_eal_soc_probe_one(const struct rte_soc_addr *addr);
  *   - Negative on error.
  */
 int rte_eal_soc_detach(const struct rte_soc_addr *addr);
+
+/**
+ * Map SoC device resources into userspace.
+ *
+ * This is called by the EAL if (drv_flags & RTE_SOC_DRV_NEED_MAPPING).
+ */
+int rte_eal_soc_map_device(struct rte_soc_device *dev);
+
+/**
+ * Unmap the device resources.
+ */
+void rte_eal_soc_unmap_device(struct rte_soc_device *dev);
 
 /**
  * Dump discovered SoC devices.

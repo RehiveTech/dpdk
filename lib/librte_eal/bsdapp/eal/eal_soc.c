@@ -32,9 +32,21 @@
  */
 
 #include <rte_soc.h>
+#include <rte_common.h>
 
 int
 rte_eal_soc_scan(void)
 {
 	return 0;
+}
+
+int
+rte_eal_soc_map_device(struct rte_soc_device *dev __rte_unused)
+{
+	return 0;
+}
+
+void
+rte_eal_soc_unmap_device(struct rte_soc_device *dev __rte_unused)
+{
 }
