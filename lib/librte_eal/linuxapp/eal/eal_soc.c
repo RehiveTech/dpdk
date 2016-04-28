@@ -173,6 +173,11 @@ static int
 dev_parse_uevent(struct rte_soc_device *dev, const char *uevent)
 {
 	const char *of;
+	const char *compat_n;
+	char *err;
+	long n;
+	char compat[strlen("OF_COMPATIBLE_NNNN=")];
+	long i;
 
 	of = dev_uevent_find(uevent, "OF_FULLNAME=");
 	if (of == NULL)
@@ -188,23 +193,81 @@ dev_parse_uevent(struct rte_soc_device *dev, const char *uevent)
 	RTE_LOG(DEBUG, EAL, "Detected device %s (%s)\n",
 			dev->addr.name, dev->addr.fdt_path);
 
-	dev->id = calloc(1, sizeof(*dev->id));
+	compat_n = dev_uevent_find(uevent, "OF_COMPATIBLE_N=");
+	if (compat_n == NULL) {
+		RTE_LOG(ERR, EAL, "No OF_COMPATIBLE_N found\n");
+		return -1;
+	}
+
+	n = strtoul(compat_n, &err, 0);
+	if (*err != '\n' && err != NULL) {
+		RTE_LOG(ERR, EAL, "Failed to parse OF_COMPATIBLE_N: %.10s\n", err);
+		goto fail_fdt_path;
+	}
+
+	if (n == 0)
+		return 1; /* cannot match anything */
+	if (n > 9999) { /* match NNNN */
+		RTE_LOG(ERR, EAL, "OF_COMPATIBLE_N is invalid: %ld\n", n);
+		goto fail_fdt_path;
+	}
+
+	dev->id = calloc(n + 1, sizeof(*dev->id));
 	if (dev->id == NULL) {
+		RTE_LOG(ERR, PMD, "Failed to alloc memory for ID\n");
 		free(dev->addr.fdt_path);
 		return -1;
 	}
 
+	for (i = 0; i < n; ++i) {
+		snprintf(compat, sizeof(compat), "OF_COMPATIBLE_%lu=", i);
+		const char *val;
+
+		val = dev_uevent_find(uevent, compat);
+		if (val == NULL) {
+			RTE_LOG(ERR, EAL, "%s was not found\n", compat);
+			goto fail_id;
+		}
+
+		dev->id[i]._compatible = strdup_until_nl(val);
+		if (dev->id[i]._compatible == NULL) {
+			RTE_LOG(ERR, PMD,
+				"Failed to alloc memory for compatible\n");
+			goto fail_id;
+		}
+
+		RTE_LOG(DEBUG, EAL, "  compatible: %s\n",
+				dev->id[i].compatible);
+	}
+
+	dev->id[n]._compatible = NULL; /* mark last one */
+
 	return 0;
+
+fail_id:
+	while (i-- >= 0)
+		free(dev->id[i]._compatible);
+	free(dev->id);
+fail_fdt_path:
+	free(dev->addr.fdt_path);
+	return -1;
 }
 
 static void
 dev_content_free(struct rte_soc_device *dev)
 {
+	int i;
+
 	if (dev->addr.fdt_path)
 		free(dev->addr.fdt_path);
 
-	free(dev->id);
-	dev->id = NULL;
+	if (dev->id != NULL) {
+		for (i = 0; dev->id[i]._compatible; ++i)
+			free(dev->id[i]._compatible);
+
+		free(dev->id);
+		dev->id = NULL;
+	}
 }
 
 static int

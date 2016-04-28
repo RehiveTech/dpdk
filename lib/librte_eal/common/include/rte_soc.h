@@ -75,7 +75,11 @@ struct rte_soc_resource {
 };
 
 struct rte_soc_id {
-	const char *compatible; /**< OF compatible specification */
+	union {
+		/* workaround -Werror=discarded-qualifiers,cast-equal */
+		char *_compatible;      /**< OF compatible specification */
+		const char *compatible; /**< OF compatible specification */
+	};
 };
 
 struct rte_soc_addr {
