@@ -242,6 +242,11 @@ rte_eal_soc_probe_one(const struct rte_soc_addr *addr)
 	if (addr == NULL)
 		return -1;
 
+	/* update current SoC device in global list, kernel bindings might have
+	 * changed since last time we looked at it */
+	if (soc_update_device(addr) < 0)
+		goto err_return;
+
 	TAILQ_FOREACH(dev, &soc_device_list, next) {
 		if (rte_eal_compare_soc_addr(&dev->addr, addr))
 			continue;

@@ -197,6 +197,19 @@ struct rte_soc_device;
  */
 int rte_eal_soc_init(void);
 
+/**
+ * Update a soc device object by asking the kernel for the latest information.
+ *
+ * This function is private to EAL.
+ *
+ * @param addr
+ *	The SoC address to look for
+ * @return
+ *   - 0 on success.
+ *   - negative on error.
+ */
+int soc_update_device(const struct rte_soc_addr *addr);
+
 struct rte_pci_driver;
 struct rte_pci_device;
 

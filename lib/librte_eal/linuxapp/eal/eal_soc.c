@@ -252,6 +252,17 @@ fail:
 }
 
 int
+soc_update_device(const struct rte_soc_addr *addr)
+{
+	char filename[PATH_MAX];
+
+	snprintf(filename, sizeof(filename), "%s/%s",
+			soc_get_sysfs_path(), addr->name);
+
+	return soc_scan_one(filename, addr->name);
+}
+
+int
 rte_eal_soc_scan(void)
 {
 	struct dirent *e;
