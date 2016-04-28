@@ -147,6 +147,31 @@ rte_eal_compare_soc_addr(const struct rte_soc_addr *a0,
 int rte_eal_soc_scan(void);
 
 /**
+ * Probe SoC devices for registered drivers.
+ */
+int rte_eal_soc_probe(void);
+
+/**
+ * Probe the single SoC device.
+ */
+int rte_eal_soc_probe_one(const struct rte_soc_addr *addr);
+
+/**
+ * Close the single SoC device.
+ *
+ * Scan the SoC devices and find the SoC device specified by the SoC
+ * address, then call the devuninit() function for registered driver
+ * that has a matching entry in its id_table for discovered device.
+ *
+ * @param addr
+ *	The SoC address to close.
+ * @return
+ *   - 0 on success.
+ *   - Negative on error.
+ */
+int rte_eal_soc_detach(const struct rte_soc_addr *addr);
+
+/**
  * Dump discovered SoC devices.
  */
 void rte_eal_soc_dump(FILE *f);

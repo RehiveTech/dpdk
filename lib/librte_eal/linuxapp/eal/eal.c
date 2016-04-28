@@ -896,6 +896,10 @@ rte_eal_init(int argc, char **argv)
 	if (rte_eal_pci_probe())
 		rte_panic("Cannot probe PCI\n");
 
+	/* Probe & Initialize SoC devices */
+	if (rte_eal_soc_probe())
+		rte_panic("Cannot probe SoC\n");
+
 	rte_eal_mcfg_complete();
 
 	return fctret;

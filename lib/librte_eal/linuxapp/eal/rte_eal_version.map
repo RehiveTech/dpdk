@@ -168,5 +168,8 @@ DPDK_16.07 {
 	rte_eal_soc_unregister;
 	rte_eal_soc_scan;
 	rte_eal_soc_dump;
+	rte_eal_soc_detach;
+	rte_eal_soc_probe;
+	rte_eal_soc_probe_one;
 
 } DPDK_16.04;
