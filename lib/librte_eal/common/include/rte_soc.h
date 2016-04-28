@@ -46,11 +46,17 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/queue.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <string.h>
 
 #include <rte_debug.h>
+#include <rte_eal.h>
+
+TAILQ_HEAD(soc_driver_list, rte_soc_driver); /**< SoC drivers in D-linked Q. */
+
+extern struct soc_driver_list soc_driver_list; /**< Global list of SoC drivers. */
 
 struct rte_soc_id {
 	const char *compatible; /**< OF compatible specification */
@@ -130,5 +136,22 @@ rte_eal_compare_soc_addr(const struct rte_soc_addr *a0,
 
 	return strcmp(a0->name, a1->name);
 }
+
+/**
+ * Register a SoC driver.
+ */
+void rte_eal_soc_register(struct rte_soc_driver *driver);
+
+#define RTE_EAL_SOC_REGISTER(name) \
+RTE_INIT(socinitfn_ ##name); \
+static void socinitfn_ ##name(void) \
+{ \
+	rte_eal_soc_register(&name.soc_drv); \
+}
+
+/**
+ * Unregister a SoC driver.
+ */
+void rte_eal_soc_unregister(struct rte_soc_driver *driver);
 
 #endif
