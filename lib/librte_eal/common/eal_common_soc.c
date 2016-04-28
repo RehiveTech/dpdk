@@ -119,10 +119,12 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 		return 1;
 	}
 
-	/* map resources */
-	ret = rte_eal_soc_map_device(dev);
-	if (ret)
-		return ret;
+	if (dr->drv_flags & RTE_SOC_DRV_NEED_MAPPING) {
+		/* map resources */
+		ret = rte_eal_soc_map_device(dev);
+		if (ret)
+			return ret;
+	}
 
 	dev->driver = dr;
 	RTE_VERIFY(dr->devinit != NULL);
@@ -173,8 +175,10 @@ rte_eal_soc_detach_dev(struct rte_soc_driver *dr,
 	/* clear driver structure */
 	dev->driver = NULL;
 
-	/* unmap resources for devices */
-	rte_eal_soc_unmap_device(dev);
+	if (dr->drv_flags & RTE_SOC_DRV_NEED_MAPPING)
+		/* unmap resources for devices */
+		rte_eal_soc_unmap_device(dev);
+
 	return 0;
 }
 
