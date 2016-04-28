@@ -49,6 +49,17 @@
 #include "eal_private.h"
 
 int
+soc_unbind_kernel_driver(struct rte_soc_device *dev)
+{
+	char devpath[PATH_MAX];
+
+	snprintf(devpath, sizeof(devpath), "%s/%s",
+	         soc_get_sysfs_path(), dev->addr.name);
+
+	return rte_eal_unbind_kernel_driver(devpath, dev->addr.name);
+}
+
+int
 rte_eal_soc_map_device(struct rte_soc_device *dev)
 {
 	int ret = -1;

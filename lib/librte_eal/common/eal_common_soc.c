@@ -38,6 +38,7 @@
 #include <rte_log.h>
 #include <rte_common.h>
 #include <rte_devargs.h>
+#include <rte_eal.h>
 #include <rte_soc.h>
 
 #include "eal_private.h"
@@ -124,6 +125,11 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 		ret = rte_eal_soc_map_device(dev);
 		if (ret)
 			return ret;
+	} else if (dr->drv_flags & RTE_SOC_DRV_FORCE_UNBIND
+		&& rte_eal_process_type() == RTE_PROC_PRIMARY) {
+		/* unbind */
+		if (soc_unbind_kernel_driver(dev) < 0)
+			return -1;
 	}
 
 	dev->driver = dr;

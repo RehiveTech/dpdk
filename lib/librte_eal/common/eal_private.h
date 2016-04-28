@@ -210,6 +210,16 @@ int rte_eal_soc_init(void);
  */
 int soc_update_device(const struct rte_soc_addr *addr);
 
+/**
+ * Unbind kernel driver for this device
+ *
+ * This function is private to EAL.
+ *
+ * @return
+ *   0 on success, negative on error
+ */
+int soc_unbind_kernel_driver(struct rte_soc_device *dev);
+
 struct rte_pci_driver;
 struct rte_pci_device;
 
