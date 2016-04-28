@@ -45,6 +45,7 @@
 #include <rte_soc.h>
 
 #include "eal_internal_cfg.h"
+#include "eal_filesystem.h"
 #include "eal_private.h"
 
 int
@@ -294,6 +295,28 @@ dev_setup_associated_driver(struct rte_soc_device *dev, const char *dirname)
 	return 0;
 }
 
+static int
+dev_setup_numa_node(struct rte_soc_device *dev, const char *dirname)
+{
+	char filename[PATH_MAX];
+	FILE *f;
+	/* if no NUMA support, set default to 0 */
+	unsigned long tmp = 0;
+	int ret = 0;
+
+	/* get numa node */
+	snprintf(filename, sizeof(filename), "%s/numa_node", dirname);
+	if ((f = fopen(filename, "r")) != NULL) {
+		if (eal_parse_sysfs_valuef(f, &tmp) < 0)
+			ret = 1;
+
+		fclose(f);
+	}
+
+	dev->numa_node = tmp;
+	return ret;
+}
+
 /**
  * Scan one SoC sysfs entry, and fill the devices list from it.
  * We require to have the uevent file with records: OF_FULLNAME and
@@ -333,6 +356,9 @@ soc_scan_one(const char *dirname, const char *name)
 	free(uevent); /* not needed anymore */
 
 	if ((ret = dev_setup_associated_driver(dev, dirname)))
+		goto fail;
+
+	if ((ret = dev_setup_numa_node(dev, dirname)) < 0)
 		goto fail;
 
 	/* device is valid, add in list (sorted) */

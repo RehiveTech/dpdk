@@ -99,6 +99,7 @@ struct rte_soc_device {
 	struct rte_soc_resource mem_resource[SOC_MAX_RESOURCE];
 	struct rte_intr_handle intr_handle; /**< Interrupt handle */
 	struct rte_soc_driver *driver;      /**< Associated driver */
+	int numa_node;                      /**< NUMA node connection */
 	struct rte_devargs *devargs;        /**< Device user arguments */
 	enum rte_kernel_driver kdrv;        /**< Kernel driver */
 };

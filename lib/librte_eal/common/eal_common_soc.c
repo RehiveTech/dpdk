@@ -108,8 +108,8 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 	if (!soc_id_match(dr->id_table, dev->id))
 		return 1;
 
-	RTE_LOG(DEBUG, EAL, "SoC device %s\n",
-			dev->addr.name);
+	RTE_LOG(DEBUG, EAL, "SoC device %s on NUMA socket %d\n",
+			dev->addr.name, dev->numa_node);
 	RTE_LOG(DEBUG, EAL, "  probe driver %s\n", dr->name);
 
 	if (dev->devargs != NULL
@@ -162,8 +162,8 @@ rte_eal_soc_detach_dev(struct rte_soc_driver *dr,
 	if (!soc_id_match(dr->id_table, dev->id))
 		return 1;
 
-	RTE_LOG(DEBUG, EAL, "SoC device %s\n",
-			dev->addr.name);
+	RTE_LOG(DEBUG, EAL, "SoC device %s on NUMA socket %i\n",
+			dev->addr.name, dev->numa_node);
 
 	RTE_LOG(DEBUG, EAL, "  remove driver: %s\n", dr->name);
 
