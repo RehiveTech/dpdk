@@ -55,6 +55,7 @@ extern "C" {
 #include <rte_debug.h>
 #include <rte_eal.h>
 #include <rte_dev.h>
+#include <rte_interrupts.h>
 
 TAILQ_HEAD(soc_driver_list, rte_soc_driver); /**< SoC drivers in D-linked Q. */
 TAILQ_HEAD(soc_device_list, rte_soc_device); /**< SoC devices in D-linked Q. */
@@ -92,6 +93,7 @@ struct rte_soc_device {
 	struct rte_soc_addr addr;           /**< SoC device Location */
 	struct rte_soc_id *id;              /**< SoC device ID list */
 	struct rte_soc_resource mem_resource[SOC_MAX_RESOURCE];
+	struct rte_intr_handle intr_handle; /**< Interrupt handle */
 	struct rte_soc_driver *driver;      /**< Associated driver */
 	struct rte_devargs *devargs;        /**< Device user arguments */
 	enum rte_kernel_driver kdrv;        /**< Kernel driver */
