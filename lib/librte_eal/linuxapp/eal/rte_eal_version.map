@@ -162,7 +162,11 @@ DPDK_16.07 {
 	rte_eal_dev_detach;
 
 	soc_driver_list;
+	soc_device_list;
+	soc_get_sysfs_path;
 	rte_eal_soc_register;
 	rte_eal_soc_unregister;
+	rte_eal_soc_scan;
+	rte_eal_soc_dump;
 
 } DPDK_16.04;

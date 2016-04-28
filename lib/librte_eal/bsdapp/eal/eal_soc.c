@@ -31,70 +31,10 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stddef.h>
-#include <stdio.h>
-#include <sys/queue.h>
+#include <rte_soc.h>
 
-#include <rte_log.h>
-
-#include "eal_private.h"
-
-struct soc_driver_list soc_driver_list =
-	TAILQ_HEAD_INITIALIZER(soc_driver_list);
-struct soc_device_list soc_device_list =
-	TAILQ_HEAD_INITIALIZER(soc_device_list);
-
-/** Pathname of SoC devices directory. */
-#define SYSFS_SOC_DEVICES "/sys/bus/platform/devices"
-
-const char *soc_get_sysfs_path(void)
+int
+rte_eal_soc_scan(void)
 {
-	const char *path = NULL;
-
-	path = getenv("SYSFS_SOC_DEVICES");
-	if (path == NULL)
-		return SYSFS_SOC_DEVICES;
-
-	return path;
-}
-
-/* dump one device */
-static int
-soc_dump_one_device(FILE *f, struct rte_soc_device *dev)
-{
-	int i;
-
-	fprintf(f, "%s", dev->addr.name);
-	fprintf(f, " - fdt_path: %s\n",
-			dev->addr.fdt_path? dev->addr.fdt_path : "(none)");
-
-	for (i = 0; dev->id && dev->id[i].compatible; ++i)
-		fprintf(f, "   %s\n", dev->id[i].compatible);
-
 	return 0;
-}
-
-/* dump devices on the bus */
-void
-rte_eal_soc_dump(FILE *f)
-{
-	struct rte_soc_device *dev = NULL;
-
-	TAILQ_FOREACH(dev, &soc_device_list, next) {
-		soc_dump_one_device(f, dev);
-	}
-}
-
-/* register a driver */
-void
-rte_eal_soc_register(struct rte_soc_driver *driver)
-{
-	TAILQ_INSERT_TAIL(&soc_driver_list, driver, next);
-}
-
-/* unregister a driver */
-void
-rte_eal_soc_unregister(struct rte_soc_driver *driver)
-{
-	TAILQ_REMOVE(&soc_driver_list, driver, next);
 }

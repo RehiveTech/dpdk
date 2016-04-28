@@ -58,6 +58,7 @@ SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_memory.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_hugepage_info.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_thread.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_log.c
+SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_soc.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_pci.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_debug.c
 SRCS-$(CONFIG_RTE_EXEC_ENV_BSDAPP) += eal_lcore.c
