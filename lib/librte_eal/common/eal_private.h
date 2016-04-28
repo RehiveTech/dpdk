@@ -36,6 +36,7 @@
 
 #include <stdio.h>
 #include <rte_pci.h>
+#include <rte_soc.h>
 
 /**
  * Initialize the memzone subsystem (private to eal).
@@ -182,6 +183,9 @@ int rte_eal_ivshmem_init(void);
  */
 int rte_eal_ivshmem_obj_init(void);
 #endif
+
+struct rte_soc_driver;
+struct rte_soc_device;
 
 struct rte_pci_driver;
 struct rte_pci_device;

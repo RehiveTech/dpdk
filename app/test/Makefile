@@ -43,6 +43,7 @@ APP = test
 #
 SRCS-$(CONFIG_RTE_LIBRTE_CMDLINE) := commands.c
 SRCS-y += test.c
+SRCS-y += test_soc.c
 SRCS-y += test_pci.c
 SRCS-y += test_prefetch.c
 SRCS-y += test_byteorder.c
