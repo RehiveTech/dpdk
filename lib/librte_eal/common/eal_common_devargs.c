@@ -105,6 +105,13 @@ rte_eal_devargs_add(enum rte_devtype devtype, const char *devargs_str)
 			goto fail;
 
 		break;
+
+	case RTE_DEVTYPE_WHITELISTED_SOC:
+	case RTE_DEVTYPE_BLACKLISTED_SOC:
+		/* save target device name */
+		devargs->soc.addr.name = strdup(buf); /* FIXME: memory leak */
+		break;
+
 	case RTE_DEVTYPE_VIRTUAL:
 		/* save driver name */
 		ret = snprintf(devargs->virt.drv_name,

@@ -154,11 +154,19 @@ rte_eal_vdev_uninit(const char *name)
 
 int rte_eal_dev_attach(const char *name, const char *devargs)
 {
-	struct rte_pci_addr addr;
+	struct rte_soc_addr soc_addr;
+	struct rte_pci_addr pci_addr;
 	int ret = -1;
 
-	if (eal_parse_pci_DomBDF(name, &addr) == 0) {
-		if (rte_eal_pci_probe_one(&addr) < 0)
+	memset(&soc_addr, 0, sizeof(soc_addr));
+	if (rte_eal_parse_soc_spec(name, &soc_addr) == 0) {
+		if (rte_eal_soc_probe_one(&soc_addr) < 0)
+			goto err_soc;
+
+		free(soc_addr.name);
+
+	} else 	if (eal_parse_pci_DomBDF(name, &pci_addr) == 0) {
+		if (rte_eal_pci_probe_one(&pci_addr) < 0)
 			goto err;
 
 	} else {
@@ -168,6 +176,8 @@ int rte_eal_dev_attach(const char *name, const char *devargs)
 
 	return 0;
 
+err_soc:
+	free(soc_addr.name);
 err:
 	RTE_LOG(ERR, EAL, "Driver, cannot attach the device\n");
 	return ret;
@@ -175,10 +185,17 @@ err:
 
 int rte_eal_dev_detach(const char *name)
 {
-	struct rte_pci_addr addr;
+	struct rte_soc_addr soc_addr;
+	struct rte_pci_addr pci_addr;
 
-	if (eal_parse_pci_DomBDF(name, &addr) == 0) {
-		if (rte_eal_pci_detach(&addr) < 0)
+	if (rte_eal_parse_soc_spec(name, &soc_addr) == 0) {
+		if (rte_eal_soc_detach(&soc_addr) < 0)
+			goto soc_err;
+
+		free(soc_addr.name);
+
+	} else if (eal_parse_pci_DomBDF(name, &pci_addr) == 0) {
+		if (rte_eal_pci_detach(&pci_addr) < 0)
 			goto err;
 	} else {
 		if (rte_eal_vdev_uninit(name))
@@ -186,6 +203,8 @@ int rte_eal_dev_detach(const char *name)
 	}
 	return 0;
 
+soc_err:
+	free(soc_addr.name);
 err:
 	RTE_LOG(ERR, EAL, "Driver, cannot detach the device\n");
 	return -1;

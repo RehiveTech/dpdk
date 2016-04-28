@@ -37,6 +37,7 @@
 
 #include <rte_log.h>
 #include <rte_common.h>
+#include <rte_devargs.h>
 #include <rte_soc.h>
 
 #include "eal_private.h"
@@ -58,6 +59,21 @@ const char *soc_get_sysfs_path(void)
 		return SYSFS_SOC_DEVICES;
 
 	return path;
+}
+
+static struct rte_devargs *soc_devargs_lookup(struct rte_soc_device *dev)
+{
+	struct rte_devargs *devargs;
+
+	TAILQ_FOREACH(devargs, &devargs_list, next) {
+		if (devargs->type != RTE_DEVTYPE_BLACKLISTED_SOC &&
+			devargs->type != RTE_DEVTYPE_WHITELISTED_SOC)
+			continue;
+		if (!rte_eal_compare_soc_addr(&dev->addr, &devargs->soc.addr))
+			return devargs;
+	}
+
+	return NULL;
 }
 
 static int soc_id_match(const struct rte_soc_id *drv_id,
@@ -95,6 +111,13 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 	RTE_LOG(DEBUG, EAL, "SoC device %s\n",
 			dev->addr.name);
 	RTE_LOG(DEBUG, EAL, "  probe driver %s\n", dr->name);
+
+	if (dev->devargs != NULL
+		&& dev->devargs->type == RTE_DEVTYPE_BLACKLISTED_SOC) {
+		RTE_LOG(DEBUG, EAL,
+			"  device is blacklisted, skipping\n");
+		return 1;
+	}
 
 	dev->driver = dr;
 	RTE_VERIFY(dr->devinit != NULL);
@@ -244,12 +267,26 @@ int
 rte_eal_soc_probe(void)
 {
 	struct rte_soc_device *dev = NULL;
+	struct rte_devargs *devargs;
 	int probe_all = 0;
 	int ret = 0;
 
+	if (rte_eal_devargs_type_count(RTE_DEVTYPE_WHITELISTED_SOC) == 0)
+		probe_all = 1;
+
 	TAILQ_FOREACH(dev, &soc_device_list, next) {
 
-		ret = soc_probe_all_drivers(dev);
+		/* set devargs in SoC structure */
+		devargs = soc_devargs_lookup(dev);
+		if (devargs != NULL)
+			dev->devargs = devargs;
+
+		/* probe all or only whitelisted devices */
+		if (probe_all)
+			ret = soc_probe_all_drivers(dev);
+		else if (devargs != NULL &&
+			devargs->type == RTE_DEVTYPE_WHITELISTED_SOC)
+			ret = soc_probe_all_drivers(dev);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Requested device %s"
 				 " cannot be used\n", dev->addr.name);
