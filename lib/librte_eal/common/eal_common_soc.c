@@ -120,6 +120,14 @@ rte_eal_soc_probe_one_driver(struct rte_soc_driver *dr,
 		return 1;
 	}
 
+	if (!dev->is_dma_coherent) {
+		if (!(dr->drv_flags & RTE_SOC_DRV_ACCEPT_NONCC)) {
+			RTE_LOG(DEBUG, EAL,
+				"  device is not DMA coherent, skipping\n");
+			return 1;
+		}
+	}
+
 	if (dr->drv_flags & RTE_SOC_DRV_NEED_MAPPING) {
 		/* map resources */
 		ret = rte_eal_soc_map_device(dev);

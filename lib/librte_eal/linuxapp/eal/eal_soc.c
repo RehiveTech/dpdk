@@ -328,6 +328,25 @@ dev_setup_numa_node(struct rte_soc_device *dev, const char *dirname)
 	return ret;
 }
 
+static int
+dev_detect_is_coherent(struct rte_soc_device *dev)
+{
+	char filename[PATH_MAX];
+	FILE *f;
+
+	if (dev->addr.fdt_path == NULL)
+		return 0; /* no way to detect */
+
+	snprintf(filename, sizeof(filename), "%s%s/dma-coherent",
+			"/proc/device-tree", dev->addr.fdt_path);
+	if ((f = fopen(filename, "r")) == NULL) {
+		return 0;
+	}
+
+	fclose(f);
+	return 1;
+}
+
 /**
  * Scan one SoC sysfs entry, and fill the devices list from it.
  * We require to have the uevent file with records: OF_FULLNAME and
@@ -372,6 +391,10 @@ soc_scan_one(const char *dirname, const char *name)
 	if ((ret = dev_setup_numa_node(dev, dirname)) < 0)
 		goto fail;
 
+	dev->is_dma_coherent = dev_detect_is_coherent(dev);
+	RTE_LOG(DEBUG, EAL, "  DMA %s\n",
+			dev->is_dma_coherent? "coherent" : "non-coherent");
+
 	/* device is valid, add in list (sorted) */
 	if (TAILQ_EMPTY(&soc_device_list)) {
 		TAILQ_INSERT_TAIL(&soc_device_list, dev, next);
@@ -387,6 +410,7 @@ soc_scan_one(const char *dirname, const char *name)
 				TAILQ_INSERT_BEFORE(dev2, dev, next);
 			} else { /* already registered */
 				dev2->kdrv = dev->kdrv;
+				dev2->is_dma_coherent = dev->is_dma_coherent;
 				memmove(dev2->mem_resource, dev->mem_resource,
 					sizeof(dev->mem_resource));
 

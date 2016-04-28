@@ -100,6 +100,7 @@ struct rte_soc_device {
 	struct rte_intr_handle intr_handle; /**< Interrupt handle */
 	struct rte_soc_driver *driver;      /**< Associated driver */
 	int numa_node;                      /**< NUMA node connection */
+	int is_dma_coherent;                /**< DMA coherent device */
 	struct rte_devargs *devargs;        /**< Device user arguments */
 	enum rte_kernel_driver kdrv;        /**< Kernel driver */
 };
@@ -136,6 +137,8 @@ struct rte_soc_driver {
 #define RTE_SOC_DRV_INTR_LSC	 0x0008
 /** Device driver supports detaching capability */
 #define RTE_SOC_DRV_DETACHABLE	 0x0010
+/** Device driver accepts DMA non-coherent devices */
+#define RTE_SOC_DRV_ACCEPT_NONCC 0x0020
 
 /**
  * A structure describing a SoC mapping.
