@@ -126,13 +126,30 @@ rte_eal_get_configuration(void)
 	return &rte_config;
 }
 
+int
+eal_parse_sysfs_valuef(FILE *f, unsigned long *val)
+{
+	char buf[BUFSIZ];
+	char *end = NULL;
+
+	RTE_VERIFY(f != NULL);
+
+	if (fgets(buf, sizeof(buf), f) == NULL)
+		return -1;
+
+	*val = strtoul(buf, &end, 0);
+	if ((buf[0] == '\0') || (end == NULL) || (*end != '\n'))
+		return -2;
+
+	return 0;
+}
+
 /* parse a sysfs (or other) file containing one integer value */
 int
 eal_parse_sysfs_value(const char *filename, unsigned long *val)
 {
+	int ret;
 	FILE *f;
-	char buf[BUFSIZ];
-	char *end = NULL;
 
 	if ((f = fopen(filename, "r")) == NULL) {
 		RTE_LOG(ERR, EAL, "%s(): cannot open sysfs value %s\n",
@@ -140,21 +157,18 @@ eal_parse_sysfs_value(const char *filename, unsigned long *val)
 		return -1;
 	}
 
-	if (fgets(buf, sizeof(buf), f) == NULL) {
+	ret = eal_parse_sysfs_valuef(f, val);
+	if (ret == -1) {
 		RTE_LOG(ERR, EAL, "%s(): cannot read sysfs value %s\n",
-			__func__, filename);
-		fclose(f);
-		return -1;
+				__func__, filename);
 	}
-	*val = strtoul(buf, &end, 0);
-	if ((buf[0] == '\0') || (end == NULL) || (*end != '\n')) {
+	else if (ret < 0) {
 		RTE_LOG(ERR, EAL, "%s(): cannot parse sysfs value %s\n",
 				__func__, filename);
-		fclose(f);
-		return -1;
 	}
+
 	fclose(f);
-	return 0;
+	return ret;
 }
 
 

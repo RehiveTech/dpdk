@@ -43,6 +43,7 @@
 /** Path of rte config file. */
 #define RUNTIME_CONFIG_FMT "%s/.%s_config"
 
+#include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
 #include <unistd.h>
@@ -114,5 +115,9 @@ eal_get_hugefile_temp_path(char *buffer, size_t buflen, const char *hugedir, int
 /** Function to read a single numeric value from a file on the filesystem.
  * Used to read information from files on /sys */
 int eal_parse_sysfs_value(const char *filename, unsigned long *val);
+
+/** Function to read a single numeric value from a file on the filesystem.
+ * Used to read information from files on /sys */
+int eal_parse_sysfs_valuef(FILE *f, unsigned long *val);
 
 #endif /* EAL_FILESYSTEM_H */
