@@ -179,6 +179,30 @@ dev_content_free(struct rte_soc_device *dev)
 	dev->id = NULL;
 }
 
+static int
+dev_setup_associated_driver(struct rte_soc_device *dev, const char *dirname)
+{
+	char filename[PATH_MAX];
+	char driver[PATH_MAX];
+	int ret;
+
+	/* parse driver */
+	snprintf(filename, sizeof(filename), "%s/driver", dirname);
+	ret = rte_eal_get_kernel_driver_by_path(filename, driver);
+	if (ret < 0) {
+		RTE_LOG(ERR, EAL, "Fail to get kernel driver for %s\n", dirname);
+		return 1;
+	}
+
+	if (!ret) {
+		dev->kdrv = RTE_KDRV_UNKNOWN;
+	} else {
+		dev->kdrv = RTE_KDRV_NONE;
+	}
+
+	return 0;
+}
+
 /**
  * Scan one SoC sysfs entry, and fill the devices list from it.
  * We require to have the uevent file with records: OF_FULLNAME and
@@ -217,6 +241,9 @@ soc_scan_one(const char *dirname, const char *name)
 		goto fail;
 	free(uevent); /* not needed anymore */
 
+	if ((ret = dev_setup_associated_driver(dev, dirname)))
+		goto fail;
+
 	/* device is valid, add in list (sorted) */
 	if (TAILQ_EMPTY(&soc_device_list)) {
 		TAILQ_INSERT_TAIL(&soc_device_list, dev, next);
@@ -231,6 +258,7 @@ soc_scan_one(const char *dirname, const char *name)
 			if (ret < 0) {
 				TAILQ_INSERT_BEFORE(dev2, dev, next);
 			} else { /* already registered */
+				dev2->kdrv = dev->kdrv;
 
 				dev_content_free(dev2);
 				dev2->addr.fdt_path = dev->addr.fdt_path;
