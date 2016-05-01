@@ -930,7 +930,7 @@ pci_vfio_map_resource(struct rte_pci_device *dev)
 			void *map_addr = NULL;
 			if (memreg[0].size) {
 				/* actual map of first part */
-				map_addr = pci_map_resource(bar_addr, vfio_dev_fd,
+				map_addr = map_resource(bar_addr, vfio_dev_fd,
 							    memreg[0].offset,
 							    memreg[0].size,
 							    MAP_FIXED);
@@ -940,7 +940,7 @@ pci_vfio_map_resource(struct rte_pci_device *dev)
 			if (map_addr != MAP_FAILED
 			    && memreg[1].offset && memreg[1].size) {
 				void *second_addr = RTE_PTR_ADD(bar_addr, memreg[1].offset);
-				map_addr = pci_map_resource(second_addr,
+				map_addr = map_resource(second_addr,
 							    vfio_dev_fd, memreg[1].offset,
 							    memreg[1].size,
 							    MAP_FIXED);

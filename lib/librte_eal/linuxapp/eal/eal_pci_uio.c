@@ -51,6 +51,7 @@
 
 #include "eal_filesystem.h"
 #include "eal_pci_init.h"
+#include "eal_private.h"
 
 void *pci_map_addr = NULL;
 
@@ -345,7 +346,7 @@ pci_uio_map_resource_by_index(struct rte_pci_device *dev, int res_idx,
 	if (pci_map_addr == NULL)
 		pci_map_addr = pci_find_max_end_va();
 
-	mapaddr = pci_map_resource(pci_map_addr, fd, 0,
+	mapaddr = map_resource(pci_map_addr, fd, 0,
 			(size_t)dev->mem_resource[res_idx].len, 0);
 	close(fd);
 	if (mapaddr == MAP_FAILED)

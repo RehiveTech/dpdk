@@ -120,6 +120,38 @@ int rte_eal_log_early_init(void);
 int rte_eal_log_init(const char *id, int facility);
 
 /**
+ * @internal
+ * Map a particular resource from a file.
+ *
+ * @param requested_addr
+ *      The starting address for the new mapping range.
+ * @param fd
+ *      The file descriptor.
+ * @param offset
+ *      The offset for the mapping range.
+ * @param size
+ *      The size for the mapping range.
+ * @param additional_flags
+ *      The additional flags for the mapping range.
+ * @return
+ *   - On success, the function returns a pointer to the mapped area.
+ *   - On error, the value MAP_FAILED is returned.
+ */
+void *map_resource(void *requested_addr, int fd, off_t offset,
+		size_t size, int additional_flags);
+
+/**
+ * @internal
+ * Unmap a particular resource.
+ *
+ * @param requested_addr
+ *      The address for the unmapping range.
+ * @param size
+ *      The size for the unmapping range.
+ */
+void unmap_resource(void *requested_addr, size_t size);
+
+/**
  * Init the default log stream
  *
  * This function is private to EAL.

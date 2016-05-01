@@ -75,7 +75,7 @@ pci_uio_map_secondary(struct rte_pci_device *dev)
 				return -1;
 			}
 
-			void *mapaddr = pci_map_resource(uio_res->maps[i].addr,
+			void *mapaddr = map_resource(uio_res->maps[i].addr,
 					fd, (off_t)uio_res->maps[i].offset,
 					(size_t)uio_res->maps[i].size, 0);
 			/* fd is not needed in slave process, close it */
@@ -140,7 +140,7 @@ pci_uio_map_resource(struct rte_pci_device *dev)
 	return 0;
 error:
 	for (i = 0; i < map_idx; i++) {
-		pci_unmap_resource(uio_res->maps[i].addr,
+		unmap_resource(uio_res->maps[i].addr,
 				(size_t)uio_res->maps[i].size);
 		rte_free(uio_res->maps[i].path);
 	}
@@ -157,7 +157,7 @@ pci_uio_unmap(struct mapped_pci_resource *uio_res)
 		return;
 
 	for (i = 0; i != uio_res->nb_maps; i++) {
-		pci_unmap_resource(uio_res->maps[i].addr,
+		unmap_resource(uio_res->maps[i].addr,
 				(size_t)uio_res->maps[i].size);
 		rte_free(uio_res->maps[i].path);
 	}
