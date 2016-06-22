@@ -470,6 +470,14 @@ void rte_eal_pci_dump(FILE *f);
  */
 void rte_eal_pci_register(struct rte_pci_driver *driver);
 
+/** Helper for PCI device registeration from driver (eth, crypto) instance */
+#define RTE_EAL_PCI_REGISTER(name) \
+RTE_INIT(pciinitfn_ ##name); \
+static void pciinitfn_ ##name(void) \
+{ \
+	rte_eal_pci_register(&(name).pci_drv); \
+}
+
 /**
  * Unregister a PCI driver.
  *
