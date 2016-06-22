@@ -1056,7 +1056,9 @@ static struct eth_driver rte_qedevf_pmd = {
 		    .id_table = pci_id_qedevf_map,
 		    .drv_flags =
 		    RTE_PCI_DRV_NEED_MAPPING | RTE_PCI_DRV_INTR_LSC,
-		    },
+		    .devinit = rte_eth_dev_pci_probe,
+		    .devuninit = rte_eth_dev_pci_remove,
+		   },
 	.eth_dev_init = qedevf_eth_dev_init,
 	.eth_dev_uninit = qedevf_eth_dev_uninit,
 	.dev_private_size = sizeof(struct qede_dev),
@@ -1068,39 +1070,13 @@ static struct eth_driver rte_qede_pmd = {
 		    .id_table = pci_id_qede_map,
 		    .drv_flags =
 		    RTE_PCI_DRV_NEED_MAPPING | RTE_PCI_DRV_INTR_LSC,
-		    },
+		    .devinit = rte_eth_dev_pci_probe,
+		    .devuninit = rte_eth_dev_pci_remove,
+		   },
 	.eth_dev_init = qede_eth_dev_init,
 	.eth_dev_uninit = qede_eth_dev_uninit,
 	.dev_private_size = sizeof(struct qede_dev),
 };
 
-static int
-rte_qedevf_pmd_init(const char *name __rte_unused,
-		    const char *params __rte_unused)
-{
-	rte_eth_driver_register(&rte_qedevf_pmd);
-
-	return 0;
-}
-
-static int
-rte_qede_pmd_init(const char *name __rte_unused,
-		  const char *params __rte_unused)
-{
-	rte_eth_driver_register(&rte_qede_pmd);
-
-	return 0;
-}
-
-static struct rte_driver rte_qedevf_driver = {
-	.type = PMD_PDEV,
-	.init = rte_qede_pmd_init
-};
-
-static struct rte_driver rte_qede_driver = {
-	.type = PMD_PDEV,
-	.init = rte_qedevf_pmd_init
-};
-
-PMD_REGISTER_DRIVER(rte_qede_driver);
-PMD_REGISTER_DRIVER(rte_qedevf_driver);
+RTE_EAL_PCI_REGISTER(rte_qede_pmd);
+RTE_EAL_PCI_REGISTER(rte_qedevf_pmd);
