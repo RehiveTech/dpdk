@@ -159,5 +159,7 @@ DPDK_16.07 {
 	rte_keepalive_mark_sleep;
 	rte_keepalive_register_relay_callback;
 	rte_thread_setname;
+	rte_eal_dev_attach;
+	rte_eal_dev_detach;
 
 } DPDK_16.04;
