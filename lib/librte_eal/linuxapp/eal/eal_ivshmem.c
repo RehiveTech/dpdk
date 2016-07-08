@@ -834,7 +834,7 @@ rte_eal_ivshmem_obj_init(void)
 int rte_eal_ivshmem_init(void)
 {
 	struct rte_pci_device * dev;
-	struct rte_pci_resource * res;
+	struct rte_mem_resource * res;
 	int fd, ret;
 	char path[PATH_MAX];
 
