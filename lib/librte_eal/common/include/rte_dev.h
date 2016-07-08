@@ -210,6 +210,7 @@ static void devinitfn_ ##d(void)\
 	rte_eal_driver_register(&d);\
 }
 
+
 #ifdef __cplusplus
 }
 #endif
