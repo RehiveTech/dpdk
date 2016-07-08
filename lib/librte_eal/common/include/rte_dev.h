@@ -191,16 +191,4 @@ int rte_eal_dev_attach(const char *name, const char *devargs);
  */
 int rte_eal_dev_detach(const char *name);
 
-#define PMD_REGISTER_DRIVER(d)\
-RTE_INIT(devinitfn_ ##d);\
-static void devinitfn_ ##d(void)\
-{\
-	rte_eal_driver_register(&d);\
-}
-
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif /* _RTE_VDEV_H_ */
