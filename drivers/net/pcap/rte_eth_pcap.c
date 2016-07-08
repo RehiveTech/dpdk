@@ -1087,9 +1087,9 @@ static struct rte_vdev_driver pmd_pcap_drv = {
 	.driver = {
 		.name = "eth_pcap",
 		.type = PMD_VDEV,
-		.init = rte_pmd_pcap_devinit,
-		.uninit = rte_pmd_pcap_devuninit,
 	},
+	.init = rte_pmd_pcap_devinit,
+	.uninit = rte_pmd_pcap_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_pcap_drv);

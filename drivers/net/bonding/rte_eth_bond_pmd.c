@@ -2508,9 +2508,9 @@ static struct rte_vdev_driver bond_drv = {
 	.driver = {
 		.name = "eth_bond",
 		.type = PMD_VDEV,
-		.init = bond_init,
-		.uninit = bond_uninit,
 	},
+	.init = bond_init,
+	.uninit = bond_uninit,
 };
 
 RTE_EAL_VDRV_REGISTER(bond_drv);

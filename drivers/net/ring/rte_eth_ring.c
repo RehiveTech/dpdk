@@ -627,9 +627,9 @@ static struct rte_vdev_driver pmd_ring_drv = {
 	.driver = {
 		.name = "eth_ring",
 		.type = PMD_VDEV,
-		.init = rte_pmd_ring_devinit,
-		.uninit = rte_pmd_ring_devuninit,
 	},
+	.init = rte_pmd_ring_devinit,
+	.uninit = rte_pmd_ring_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_ring_drv);

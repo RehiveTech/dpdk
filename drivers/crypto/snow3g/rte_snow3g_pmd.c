@@ -643,9 +643,9 @@ static struct rte_vdev_driver cryptodev_snow3g_pmd_drv = {
 	.driver = {
 		.name = CRYPTODEV_NAME_SNOW3G_PMD,
 		.type = PMD_VDEV,
-		.init = cryptodev_snow3g_init,
-		.uninit = cryptodev_snow3g_uninit
 	},
+	.init = cryptodev_snow3g_init,
+	.uninit = cryptodev_snow3g_uninit,
 };
 
 RTE_EAL_VDRV_REGISTER(cryptodev_snow3g_pmd_drv);

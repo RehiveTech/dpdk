@@ -272,9 +272,9 @@ static struct rte_vdev_driver cryptodev_null_pmd_drv = {
 	.driver = {
 		.name = CRYPTODEV_NAME_NULL_PMD,
 		.type = PMD_VDEV,
-		.init = cryptodev_null_init,
-		.uninit = cryptodev_null_uninit
 	},
+	.init = cryptodev_null_init,
+	.uninit = cryptodev_null_uninit,
 };
 
 RTE_EAL_VDRV_REGISTER(cryptodev_null_pmd_drv);

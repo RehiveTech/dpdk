@@ -652,9 +652,9 @@ static struct rte_vdev_driver cryptodev_kasumi_pmd_drv = {
 	.driver = {
 		.name = CRYPTODEV_NAME_KASUMI_PMD,
 		.type = PMD_VDEV,
-		.init = cryptodev_kasumi_init,
-		.uninit = cryptodev_kasumi_uninit
 	},
+	.init = cryptodev_kasumi_init,
+	.uninit = cryptodev_kasumi_uninit,
 };
 
 RTE_EAL_VDRV_REGISTER(cryptodev_kasumi_pmd_drv);

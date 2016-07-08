@@ -518,9 +518,9 @@ static struct rte_vdev_driver aesni_gcm_pmd_drv = {
 	.driver = {
 		.name = CRYPTODEV_NAME_AESNI_GCM_PMD,
 		.type = PMD_VDEV,
-		.init = aesni_gcm_init,
-		.uninit = aesni_gcm_uninit
 	},
+	.init = aesni_gcm_init,
+	.uninit = aesni_gcm_uninit,
 };
 
 RTE_EAL_VDRV_REGISTER(aesni_gcm_pmd_drv);

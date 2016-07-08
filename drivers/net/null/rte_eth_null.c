@@ -686,9 +686,9 @@ static struct rte_vdev_driver pmd_null_drv = {
 	.driver = {
 		.name = "eth_null",
 		.type = PMD_VDEV,
-		.init = rte_pmd_null_devinit,
-		.uninit = rte_pmd_null_devuninit,
 	},
+	.init = rte_pmd_null_devinit,
+	.uninit = rte_pmd_null_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_null_drv);

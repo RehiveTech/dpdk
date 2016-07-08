@@ -875,9 +875,9 @@ static struct rte_vdev_driver pmd_af_packet_drv = {
 	.driver = {
 		.name = "eth_af_packet",
 		.type = PMD_VDEV,
-		.init = rte_pmd_af_packet_devinit,
-		.uninit = rte_pmd_af_packet_devuninit,
 	},
+	.init = rte_pmd_af_packet_devinit,
+	.uninit = rte_pmd_af_packet_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_af_packet_drv);

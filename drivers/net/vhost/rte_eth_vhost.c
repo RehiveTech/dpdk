@@ -921,9 +921,9 @@ static struct rte_vdev_driver pmd_vhost_drv = {
 	.driver = {
 		.name = "eth_vhost",
 		.type = PMD_VDEV,
-		.init = rte_pmd_vhost_devinit,
-		.uninit = rte_pmd_vhost_devuninit,
 	},
+	.init = rte_pmd_vhost_devinit,
+	.uninit = rte_pmd_vhost_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_vhost_drv);

@@ -760,9 +760,9 @@ static struct rte_vdev_driver pmd_xenvirt_drv = {
 	.driver = {
 		.name = "eth_xenvirt",
 		.type = PMD_VDEV,
-		.init = rte_pmd_xenvirt_devinit,
-		.uninit = rte_pmd_xenvirt_devuninit,
 	},
+	.init = rte_pmd_xenvirt_devinit,
+	.uninit = rte_pmd_xenvirt_devuninit,
 };
 
 RTE_EAL_VDRV_REGISTER(pmd_xenvirt_drv);
