@@ -105,19 +105,10 @@ rte_pmd_debug_trace(const char *func_name, const char *fmt, ...)
 TAILQ_HEAD(rte_driver_list, rte_driver);
 
 /**
- * Driver type enumeration
- */
-enum pmd_type {
-	PMD_VDEV = 0,
-	PMD_PDEV = 1,
-};
-
-/**
  * A structure describing a device driver.
  */
 struct rte_driver {
 	TAILQ_ENTRY(rte_driver) next;  /**< Next in list. */
-	enum pmd_type type;		   /**< PMD Driver type */
 	const char *name;                   /**< Driver name. */
 };
 

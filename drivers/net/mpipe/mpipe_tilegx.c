@@ -1626,7 +1626,6 @@ rte_pmd_mpipe_devinit(const char *ifname,
 static struct rte_vdev_driver pmd_mpipe_xgbe_drv = {
 	.driver = {
 		.name = "xgbe",
-		.type = PMD_VDEV,
 	},
 	.init = rte_pmd_mpipe_devinit,
 };
@@ -1634,7 +1633,6 @@ static struct rte_vdev_driver pmd_mpipe_xgbe_drv = {
 static struct rte_vdev_driver pmd_mpipe_gbe_drv = {
 	.driver = {
 		.name = "gbe",
-		.type = PMD_VDEV,
 	},
 	.init = rte_pmd_mpipe_devinit,
 };
