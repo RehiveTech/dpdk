@@ -60,9 +60,6 @@ rte_eal_vdev_init(const char *name, const char *args)
 		return -EINVAL;
 
 	TAILQ_FOREACH(driver, &vdev_driver_list, next) {
-		if (driver->driver.type != PMD_VDEV)
-			continue;
-
 		/*
 		 * search a driver prefix in virtual device name.
 		 * For example, if the driver is pcap PMD, driver->name
@@ -86,9 +83,6 @@ rte_eal_vdev_uninit(const char *name)
 		return -EINVAL;
 
 	TAILQ_FOREACH(driver, &vdev_driver_list, next) {
-		if (driver->driver.type != PMD_VDEV)
-			continue;
-
 		/*
 		 * search a driver prefix in virtual device name.
 		 * For example, if the driver is pcap PMD, driver->name
