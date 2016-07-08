@@ -38,7 +38,7 @@
 #include <rte_memcpy.h>
 #include <rte_memzone.h>
 #include <rte_string_fns.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_kvargs.h>
 #include <rte_errno.h>
 
@@ -623,11 +623,13 @@ rte_pmd_ring_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_ring_drv = {
-	.name = "eth_ring",
-	.type = PMD_VDEV,
-	.init = rte_pmd_ring_devinit,
-	.uninit = rte_pmd_ring_devuninit,
+static struct rte_vdev_driver pmd_ring_drv = {
+	.driver = {
+		.name = "eth_ring",
+		.type = PMD_VDEV,
+		.init = rte_pmd_ring_devinit,
+		.uninit = rte_pmd_ring_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_ring_drv);
+RTE_EAL_VDRV_REGISTER(pmd_ring_drv);

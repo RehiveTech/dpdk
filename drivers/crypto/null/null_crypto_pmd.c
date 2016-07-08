@@ -33,7 +33,7 @@
 #include <rte_common.h>
 #include <rte_config.h>
 #include <rte_cryptodev_pmd.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_malloc.h>
 
 #include "null_crypto_pmd_private.h"
@@ -268,11 +268,13 @@ cryptodev_null_uninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver cryptodev_null_pmd_drv = {
-	.name = CRYPTODEV_NAME_NULL_PMD,
-	.type = PMD_VDEV,
-	.init = cryptodev_null_init,
-	.uninit = cryptodev_null_uninit
+static struct rte_vdev_driver cryptodev_null_pmd_drv = {
+	.driver = {
+		.name = CRYPTODEV_NAME_NULL_PMD,
+		.type = PMD_VDEV,
+		.init = cryptodev_null_init,
+		.uninit = cryptodev_null_uninit
+	},
 };
 
-PMD_REGISTER_DRIVER(cryptodev_null_pmd_drv);
+RTE_EAL_VDRV_REGISTER(cryptodev_null_pmd_drv);

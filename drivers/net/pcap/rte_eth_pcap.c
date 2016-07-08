@@ -40,7 +40,7 @@
 #include <rte_string_fns.h>
 #include <rte_cycles.h>
 #include <rte_kvargs.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 
 #include <net/if.h>
 
@@ -1083,11 +1083,13 @@ rte_pmd_pcap_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_pcap_drv = {
-	.name = "eth_pcap",
-	.type = PMD_VDEV,
-	.init = rte_pmd_pcap_devinit,
-	.uninit = rte_pmd_pcap_devuninit,
+static struct rte_vdev_driver pmd_pcap_drv = {
+	.driver = {
+		.name = "eth_pcap",
+		.type = PMD_VDEV,
+		.init = rte_pmd_pcap_devinit,
+		.uninit = rte_pmd_pcap_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_pcap_drv);
+RTE_EAL_VDRV_REGISTER(pmd_pcap_drv);

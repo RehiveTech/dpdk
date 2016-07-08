@@ -35,7 +35,7 @@
 #include <rte_ethdev.h>
 #include <rte_malloc.h>
 #include <rte_memcpy.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_kvargs.h>
 #include <rte_spinlock.h>
 
@@ -682,11 +682,13 @@ rte_pmd_null_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_null_drv = {
-	.name = "eth_null",
-	.type = PMD_VDEV,
-	.init = rte_pmd_null_devinit,
-	.uninit = rte_pmd_null_devuninit,
+static struct rte_vdev_driver pmd_null_drv = {
+	.driver = {
+		.name = "eth_null",
+		.type = PMD_VDEV,
+		.init = rte_pmd_null_devinit,
+		.uninit = rte_pmd_null_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_null_drv);
+RTE_EAL_VDRV_REGISTER(pmd_null_drv);

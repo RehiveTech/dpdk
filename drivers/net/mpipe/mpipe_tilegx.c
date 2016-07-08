@@ -33,7 +33,7 @@
 #include <unistd.h>
 
 #include <rte_eal.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_eal_memconfig.h>
 #include <rte_ethdev.h>
 #include <rte_malloc.h>
@@ -1623,20 +1623,24 @@ rte_pmd_mpipe_devinit(const char *ifname,
 	return 0;
 }
 
-static struct rte_driver pmd_mpipe_xgbe_drv = {
-	.name = "xgbe",
-	.type = PMD_VDEV,
-	.init = rte_pmd_mpipe_devinit,
+static struct rte_vdev_driver pmd_mpipe_xgbe_drv = {
+	.driver = {
+		.name = "xgbe",
+		.type = PMD_VDEV,
+		.init = rte_pmd_mpipe_devinit,
+	},
 };
 
-static struct rte_driver pmd_mpipe_gbe_drv = {
-	.name = "gbe",
-	.type = PMD_VDEV,
-	.init = rte_pmd_mpipe_devinit,
+static struct rte_vdev_driver pmd_mpipe_gbe_drv = {
+	.driver = {
+		.name = "gbe",
+		.type = PMD_VDEV,
+		.init = rte_pmd_mpipe_devinit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_mpipe_xgbe_drv);
-PMD_REGISTER_DRIVER(pmd_mpipe_gbe_drv);
+RTE_EAL_VDRV_REGISTER(pmd_mpipe_xgbe_drv);
+RTE_EAL_VDRV_REGISTER(pmd_mpipe_gbe_drv);
 
 static void __attribute__((constructor, used))
 mpipe_init_contexts(void)

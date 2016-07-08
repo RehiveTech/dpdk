@@ -40,7 +40,7 @@
 #include <rte_ethdev.h>
 #include <rte_malloc.h>
 #include <rte_kvargs.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
@@ -871,11 +871,13 @@ rte_pmd_af_packet_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_af_packet_drv = {
-	.name = "eth_af_packet",
-	.type = PMD_VDEV,
-	.init = rte_pmd_af_packet_devinit,
-	.uninit = rte_pmd_af_packet_devuninit,
+static struct rte_vdev_driver pmd_af_packet_drv = {
+	.driver = {
+		.name = "eth_af_packet",
+		.type = PMD_VDEV,
+		.init = rte_pmd_af_packet_devinit,
+		.uninit = rte_pmd_af_packet_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_af_packet_drv);
+RTE_EAL_VDRV_REGISTER(pmd_af_packet_drv);

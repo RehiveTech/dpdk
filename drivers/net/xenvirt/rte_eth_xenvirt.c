@@ -53,7 +53,7 @@
 #include <rte_malloc.h>
 #include <rte_memcpy.h>
 #include <rte_string_fns.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <cmdline_parse.h>
 #include <cmdline_parse_etheraddr.h>
 
@@ -756,11 +756,13 @@ rte_pmd_xenvirt_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_xenvirt_drv = {
-	.name = "eth_xenvirt",
-	.type = PMD_VDEV,
-	.init = rte_pmd_xenvirt_devinit,
-	.uninit = rte_pmd_xenvirt_devuninit,
+static struct rte_vdev_driver pmd_xenvirt_drv = {
+	.driver = {
+		.name = "eth_xenvirt",
+		.type = PMD_VDEV,
+		.init = rte_pmd_xenvirt_devinit,
+		.uninit = rte_pmd_xenvirt_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_xenvirt_drv);
+RTE_EAL_VDRV_REGISTER(pmd_xenvirt_drv);

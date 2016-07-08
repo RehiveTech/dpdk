@@ -37,7 +37,7 @@
 #include <rte_hexdump.h>
 #include <rte_cryptodev.h>
 #include <rte_cryptodev_pmd.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_malloc.h>
 #include <rte_cpuflags.h>
 
@@ -514,11 +514,13 @@ aesni_gcm_uninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver aesni_gcm_pmd_drv = {
-	.name = CRYPTODEV_NAME_AESNI_GCM_PMD,
-	.type = PMD_VDEV,
-	.init = aesni_gcm_init,
-	.uninit = aesni_gcm_uninit
+static struct rte_vdev_driver aesni_gcm_pmd_drv = {
+	.driver = {
+		.name = CRYPTODEV_NAME_AESNI_GCM_PMD,
+		.type = PMD_VDEV,
+		.init = aesni_gcm_init,
+		.uninit = aesni_gcm_uninit
+	},
 };
 
-PMD_REGISTER_DRIVER(aesni_gcm_pmd_drv);
+RTE_EAL_VDRV_REGISTER(aesni_gcm_pmd_drv);

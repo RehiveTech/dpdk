@@ -41,7 +41,7 @@
 #include <rte_ethdev.h>
 #include <rte_malloc.h>
 #include <rte_memcpy.h>
-#include <rte_dev.h>
+#include <rte_vdev.h>
 #include <rte_kvargs.h>
 #include <rte_virtio_net.h>
 #include <rte_spinlock.h>
@@ -917,11 +917,13 @@ rte_pmd_vhost_devuninit(const char *name)
 	return 0;
 }
 
-static struct rte_driver pmd_vhost_drv = {
-	.name = "eth_vhost",
-	.type = PMD_VDEV,
-	.init = rte_pmd_vhost_devinit,
-	.uninit = rte_pmd_vhost_devuninit,
+static struct rte_vdev_driver pmd_vhost_drv = {
+	.driver = {
+		.name = "eth_vhost",
+		.type = PMD_VDEV,
+		.init = rte_pmd_vhost_devinit,
+		.uninit = rte_pmd_vhost_devuninit,
+	},
 };
 
-PMD_REGISTER_DRIVER(pmd_vhost_drv);
+RTE_EAL_VDRV_REGISTER(pmd_vhost_drv);
