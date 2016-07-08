@@ -303,7 +303,7 @@ rte_eth_dev_pci_remove(struct rte_pci_device *pci_dev)
 	if (eth_dev == NULL)
 		return -ENODEV;
 
-	eth_drv = (const struct eth_driver *)pci_dev->driver;
+	eth_drv = (const struct eth_driver *)to_pci_driver(pci_dev->device.driver);
 
 	/* Invoke PMD device uninit function */
 	if (*eth_drv->eth_dev_uninit) {
@@ -3202,21 +3202,25 @@ rte_eth_dev_get_dcb_info(uint8_t port_id,
 void
 rte_eth_copy_pci_info(struct rte_eth_dev *eth_dev, struct rte_pci_device *pci_dev)
 {
+	struct rte_pci_driver *pci_drv;
+
 	if ((eth_dev == NULL) || (pci_dev == NULL)) {
 		RTE_PMD_DEBUG_TRACE("NULL pointer eth_dev=%p pci_dev=%p\n",
 				eth_dev, pci_dev);
 		return;
 	}
 
+	pci_drv = to_pci_driver(pci_dev->device.driver);
+
 	eth_dev->data->dev_flags = 0;
-	if (pci_dev->driver->drv_flags & RTE_PCI_DRV_INTR_LSC)
+	if (pci_drv->drv_flags & RTE_PCI_DRV_INTR_LSC)
 		eth_dev->data->dev_flags |= RTE_ETH_DEV_INTR_LSC;
-	if (pci_dev->driver->drv_flags & RTE_PCI_DRV_DETACHABLE)
+	if (pci_drv->drv_flags & RTE_PCI_DRV_DETACHABLE)
 		eth_dev->data->dev_flags |= RTE_ETH_DEV_DETACHABLE;
 
 	eth_dev->data->kdrv = pci_dev->kdrv;
-	eth_dev->data->numa_node = pci_dev->numa_node;
-	eth_dev->data->drv_name = pci_dev->driver->driver.name;
+	eth_dev->data->numa_node = pci_dev->device.numa_node;
+	eth_dev->data->drv_name = pci_dev->device.driver->name;
 }
 
 int

@@ -401,7 +401,7 @@ rte_cryptodev_pci_remove(struct rte_pci_device *pci_dev)
 	if (cryptodev == NULL)
 		return -ENODEV;
 
-	cryptodrv = (const struct rte_cryptodev_driver *)pci_dev->driver;
+	cryptodrv = (const struct rte_cryptodev_driver *)to_pci_driver(pci_dev->device.driver);
 	if (cryptodrv == NULL)
 		return -ENODEV;
 

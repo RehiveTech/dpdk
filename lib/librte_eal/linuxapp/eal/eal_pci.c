@@ -350,13 +350,13 @@ pci_scan_one(const char *dirname, uint16_t domain, uint8_t bus,
 		 dirname);
 	if (access(filename, R_OK) != 0) {
 		/* if no NUMA support, set default to 0 */
-		dev->numa_node = 0;
+		dev->device.numa_node = 0;
 	} else {
 		if (eal_parse_sysfs_value(filename, &tmp) < 0) {
 			free(dev);
 			return -1;
 		}
-		dev->numa_node = tmp;
+		dev->device.numa_node = tmp;
 	}
 
 	/* parse resources */
