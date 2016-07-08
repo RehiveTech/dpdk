@@ -1052,7 +1052,9 @@ static struct rte_pci_id pci_id_qede_map[] = {
 
 static struct eth_driver rte_qedevf_pmd = {
 	.pci_drv = {
+		.driver {
 		    .name = "rte_qedevf_pmd",
+		},
 		    .id_table = pci_id_qedevf_map,
 		    .drv_flags =
 		    RTE_PCI_DRV_NEED_MAPPING | RTE_PCI_DRV_INTR_LSC,
@@ -1066,7 +1068,9 @@ static struct eth_driver rte_qedevf_pmd = {
 
 static struct eth_driver rte_qede_pmd = {
 	.pci_drv = {
+		.driver = {
 		    .name = "rte_qede_pmd",
+		},
 		    .id_table = pci_id_qede_map,
 		    .drv_flags =
 		    RTE_PCI_DRV_NEED_MAPPING | RTE_PCI_DRV_INTR_LSC,

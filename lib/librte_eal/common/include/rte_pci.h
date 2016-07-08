@@ -202,12 +202,14 @@ typedef int (pci_devuninit_t)(struct rte_pci_device *);
  */
 struct rte_pci_driver {
 	TAILQ_ENTRY(rte_pci_driver) next;       /**< Next in list. */
-	const char *name;                       /**< Driver name. */
+	struct rte_driver driver;               /**< Inherit the core driver. */
 	pci_devinit_t *devinit;                 /**< Device init. function. */
 	pci_devuninit_t *devuninit;             /**< Device uninit function. */
 	const struct rte_pci_id *id_table;	/**< ID table, NULL terminated. */
 	uint32_t drv_flags;                     /**< Flags contolling handling of device. */
 };
+
+#define to_pci_driver(drv) container_of((drv), struct rte_pci_driver, driver)
 
 /** Device needs PCI BAR mapping (done with either IGB_UIO or VFIO) */
 #define RTE_PCI_DRV_NEED_MAPPING 0x0001

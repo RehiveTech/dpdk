@@ -1428,7 +1428,9 @@ static uint16_t eth_ena_xmit_pkts(void *tx_queue, struct rte_mbuf **tx_pkts,
 
 static struct eth_driver rte_ena_pmd = {
 	.pci_drv = {
-		.name = "rte_ena_pmd",
+		.driver = {
+			.name = "rte_ena_pmd",
+		},
 		.id_table = pci_id_ena_map,
 		.drv_flags = RTE_PCI_DRV_NEED_MAPPING,
 		.devinit = rte_eth_dev_pci_probe,

@@ -866,7 +866,9 @@ out_free_adapter:
 
 static struct eth_driver rte_cxgbe_pmd = {
 	.pci_drv = {
-		.name = "rte_cxgbe_pmd",
+		.driver = {
+			.name = "rte_cxgbe_pmd",
+		},
 		.id_table = cxgb4_pci_tbl,
 		.drv_flags = RTE_PCI_DRV_NEED_MAPPING | RTE_PCI_DRV_INTR_LSC,
 		.devinit = rte_eth_dev_pci_probe,
