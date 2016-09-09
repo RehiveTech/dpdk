@@ -168,4 +168,8 @@ DPDK_16.11 {
 
 	rte_eal_dev_attach;
 	rte_eal_dev_detach;
+	soc_driver_list;
+	rte_eal_soc_register;
+	rte_eal_soc_unregister;
+
 } DPDK_16.07;
